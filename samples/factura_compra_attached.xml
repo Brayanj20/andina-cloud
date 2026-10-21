@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AttachedDocument xmlns="urn:oasis:names:specification:ubl:schema:xsd:AttachedDocument-2"
+  xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+  xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:ID>AD-FV-8841</cbc:ID>
+  <cac:Attachment><cac:ExternalReference>
+    <cbc:MimeCode>text/xml</cbc:MimeCode><cbc:EncodingCode>UTF-8</cbc:EncodingCode>
+    <cbc:Description><![CDATA[<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+         xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+         xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>UBL 2.1</cbc:UBLVersionID>
+  <cbc:ID>FV-8841</cbc:ID>
+  <cbc:IssueDate>2026-10-01</cbc:IssueDate>
+  <cbc:InvoiceTypeCode>01</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>COP</cbc:DocumentCurrencyCode>
+  <cac:AccountingSupplierParty><cac:Party><cac:PartyTaxScheme>
+    <cbc:RegistrationName>Textiles del Valle S.A.S.</cbc:RegistrationName><cbc:CompanyID schemeName="31">800111222</cbc:CompanyID>
+  </cac:PartyTaxScheme></cac:Party></cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty><cac:Party><cac:PartyTaxScheme>
+    <cbc:RegistrationName>Distribuciones Andina S.A.S.</cbc:RegistrationName><cbc:CompanyID schemeName="31">900123456</cbc:CompanyID>
+  </cac:PartyTaxScheme></cac:Party></cac:AccountingCustomerParty>
+  <cac:TaxTotal><cbc:TaxAmount currencyID="COP">606100.00</cbc:TaxAmount></cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="COP">3190000.00</cbc:LineExtensionAmount>
+    <cbc:PayableAmount currencyID="COP">3796100.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="94">30</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="COP">2550000.00</cbc:LineExtensionAmount>
+    <cac:Item>
+      <cbc:Description>Morral urbano 20 L</cbc:Description>
+      <cac:StandardItemIdentification><cbc:ID schemeID="999">MOR-001</cbc:ID></cac:StandardItemIdentification>
+    </cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="COP">85000.00</cbc:PriceAmount></cac:Price>
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>2</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="94">20</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="COP">640000.00</cbc:LineExtensionAmount>
+    <cac:Item>
+      <cbc:Description>Canguro deportivo</cbc:Description>
+      <cac:StandardItemIdentification><cbc:ID schemeID="999">CAN-002</cbc:ID></cac:StandardItemIdentification>
+    </cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="COP">32000.00</cbc:PriceAmount></cac:Price>
+  </cac:InvoiceLine>
+</Invoice>]]></cbc:Description>
+  </cac:ExternalReference></cac:Attachment>
+</AttachedDocument>
