@@ -1,0 +1,38 @@
+# Blueprint de Render: arquitectura completa en la nube.
+# (Los servicios privados "pserv" requieren plan de pago; para una demo gratuita
+#  use la opción "monolito" descrita en el README.)
+services:
+  - type: web
+    name: andina-gateway
+    runtime: docker
+    plan: starter
+    envVars:
+      - { key: APP, value: gateway }
+      - { key: API_KEYS, generateValue: true }
+      - key: FACTURACION_URL
+        fromService: { type: pserv, name: andina-facturacion, property: hostport }
+      - key: INVENTARIO_URL
+        fromService: { type: pserv, name: andina-inventario, property: hostport }
+  - type: pserv
+    name: andina-facturacion
+    runtime: docker
+    plan: starter
+    envVars:
+      - { key: APP, value: facturacion }
+      - { key: PORT, value: "8000" }
+      - { key: NIT_EMPRESA, value: "900123456" }
+      - key: REDIS_URL
+        fromService: { type: keyvalue, name: andina-bus, property: connectionString }
+  - type: pserv
+    name: andina-inventario
+    runtime: docker
+    plan: starter
+    envVars:
+      - { key: APP, value: inventario }
+      - { key: PORT, value: "8000" }
+      - key: REDIS_URL
+        fromService: { type: keyvalue, name: andina-bus, property: connectionString }
+  - type: keyvalue
+    name: andina-bus
+    plan: free
+    ipAllowList: []

@@ -1,0 +1,40 @@
+# Arquitectura completa en local: gateway + 2 microservicios + Redis (bus de eventos)
+services:
+  redis:
+    image: redis:7-alpine
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, retries: 5 }
+
+  facturacion:
+    build: .
+    environment:
+      APP: facturacion
+      REDIS_URL: redis://redis:6379/0
+      DB_PATH: /data/facturacion.db
+      NIT_EMPRESA: "900123456"
+    volumes: [facturacion-data:/data]
+    depends_on: { redis: { condition: service_healthy } }
+
+  inventario:
+    build: .
+    environment:
+      APP: inventario
+      REDIS_URL: redis://redis:6379/0
+      DB_PATH: /data/inventario.db
+      STOCK_MINIMO: "5"
+    volumes: [inventario-data:/data]
+    depends_on: { redis: { condition: service_healthy } }
+    deploy: { replicas: 1 }   # se puede escalar: varios consumidores en el mismo grupo
+
+  gateway:
+    build: .
+    environment:
+      APP: gateway
+      FACTURACION_URL: http://facturacion:8000
+      INVENTARIO_URL: http://inventario:8000
+      API_KEYS: demo-key
+    ports: ["8000:8000"]
+    depends_on: [facturacion, inventario]
+
+volumes:
+  facturacion-data:
+  inventario-data:
