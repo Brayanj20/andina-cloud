@@ -1,0 +1,42 @@
+@startuml casos_de_uso
+left to right direction
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #2D6A8F
+}
+skinparam actor {
+  BorderColor #1F2A44
+}
+actor "Auxiliar contable" as Aux
+actor "Gerente" as Ger
+actor "Vendedor" as Ven
+actor "Proveedor tecnológico\n(sistema externo)" as PT <<sistema>>
+rectangle "Plataforma de facturación e inventario — Distribuciones Andina" {
+  usecase "UC1 Registrar factura\nelectrónica (XML UBL)" as UC1
+  usecase "UC2 Registrar factura\npor API (JSON)" as UC2
+  usecase "Validar y clasificar\nfactura (venta/compra)" as UCV
+  usecase "Actualizar inventario" as UCI
+  usecase "Generar alerta de\nstock bajo" as UCA
+  usecase "UC3 Consultar facturas" as UC3
+  usecase "UC4 Ver resumen de\nventas, compras e IVA" as UC4
+  usecase "UC5 Consultar stock\ny kardex" as UC5
+  usecase "UC6 Consultar alertas" as UC6
+  usecase "Autenticar con\nAPI key" as UCK
+}
+Aux --> UC1
+Aux --> UC3
+PT --> UC2
+Ger --> UC4
+Ger --> UC6
+Ven --> UC5
+UC1 ..> UCV : <<include>>
+UC2 ..> UCV : <<include>>
+UCV ..> UCI : <<include>>
+UCA .> UCI : <<extend>>
+UC1 ..> UCK : <<include>>
+UC2 ..> UCK : <<include>>
+UC3 ..> UCK : <<include>>
+UC4 ..> UCK : <<include>>
+UC5 ..> UCK : <<include>>
+@enduml

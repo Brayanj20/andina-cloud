@@ -1,0 +1,37 @@
+@startuml secuencia
+skinparam shadowing false
+skinparam sequence {
+  ParticipantBorderColor #2D6A8F
+  ParticipantBackgroundColor #EEF4FB
+  LifeLineBorderColor #8A8A8A
+}
+actor "Auxiliar contable" as U
+participant "API Gateway" as G
+participant "Facturación" as F
+database "BD Facturación" as DF
+queue "Redis Streams\n(andina.eventos)" as B
+participant "Inventario" as I
+database "BD Inventario" as DI
+U -> G : POST /api/facturacion/facturas (XML, X-API-Key)
+G -> G : validar API key
+G -> F : POST /facturas [reintento + circuit breaker]
+F -> F : ParserFactory.para("xml").parse()\nvalidar() · clasificar(NIT)
+F -> DF : INSERT factura (único nit+número)
+alt factura duplicada
+  F --> G : 409 Conflict
+  G --> U : 409 Conflict
+else registrada
+  F -> B : XADD FacturaRegistrada
+  F --> G : 201 Created (factura)
+  G --> U : 201 Created
+end
+note over B, I : Asíncrono: si Inventario está caído,\nel evento espera en el stream
+I -> B : XREADGROUP grupo "inventario"
+B --> I : FacturaRegistrada
+I -> DI : ¿evento ya procesado? (idempotencia)
+I -> DI : actualizar stock + kardex (transacción)
+opt stock < mínimo
+  I -> B : XADD StockBajo
+end
+I -> B : XACK
+@enduml

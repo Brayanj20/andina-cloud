@@ -1,0 +1,99 @@
+@startuml clases
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #2D6A8F
+  HeaderBackgroundColor #EEF4FB
+}
+package "Facturación" {
+  class Factura {
+    +id: int
+    +numero: str
+    +fecha: date
+    +tipo: str
+    +nit_emisor: str
+    +nit_receptor: str
+    +total: Decimal
+    +iva: Decimal
+    +validar()
+    +clasificar(nit_empresa)
+    +to_dict(): dict
+  }
+  class LineaFactura {
+    +sku: str
+    +descripcion: str
+    +cantidad: Decimal
+    +precio_unitario: Decimal
+    +subtotal(): Decimal
+  }
+  interface FacturaParser <<Strategy>> {
+    +parse(contenido): Factura
+  }
+  class UblXmlParser
+  class JsonParser
+  class ParserFactory <<Factory>> {
+    +para(content_type): FacturaParser
+  }
+  interface FacturaRepository <<Repository>> {
+    +guardar(f): Factura
+    +obtener(id): Factura
+    +listar(tipo, desde, hasta)
+  }
+  class SqliteFacturaRepository
+  class FacturacionService {
+    +registrar(contenido, content_type): Factura
+    +resumen(desde, hasta): dict
+  }
+}
+package "Común" {
+  interface EventBus <<Pub/Sub>> {
+    +publish(evento)
+    +subscribe(tipo, handler, grupo)
+  }
+  class InMemoryBus
+  class RedisStreamBus
+  class Evento {
+    +id: str
+    +tipo: str
+    +datos: dict
+    +ocurrido_en: str
+  }
+  class CircuitBreaker {
+    +estado: str
+    +llamar(fn)
+  }
+}
+package "Inventario" {
+  class InventarioService {
+    +stock_minimo: int
+    +on_factura_registrada(evento)
+  }
+  class InventarioRepository {
+    +aplicar_factura(evento_id, datos)
+    +productos()
+    +movimientos(sku)
+  }
+}
+package "Gateway" {
+  class APIGateway {
+    +proxy(servicio, path)
+    +salud()
+  }
+}
+Factura "1" *-- "1..*" LineaFactura
+FacturaParser <|.. UblXmlParser
+FacturaParser <|.. JsonParser
+ParserFactory ..> FacturaParser : crea
+FacturaRepository <|.. SqliteFacturaRepository
+FacturacionService --> FacturaRepository
+FacturacionService --> EventBus
+FacturacionService ..> ParserFactory
+FacturacionService ..> Factura
+EventBus <|.. InMemoryBus
+EventBus <|.. RedisStreamBus
+EventBus ..> Evento
+InventarioService --> InventarioRepository
+InventarioService --> EventBus : suscribe
+APIGateway "1" o-- "2" CircuitBreaker
+@enduml

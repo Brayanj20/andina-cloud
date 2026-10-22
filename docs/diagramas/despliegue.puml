@@ -1,0 +1,35 @@
+@startuml despliegue
+skinparam shadowing false
+skinparam node {
+  BackgroundColor #F7F8F4
+  BorderColor #2D6A8F
+}
+node "Cliente\n(navegador / ERP / proveedor tecnológico)" as C
+cloud "Nube (Render · región Oregon)" {
+  node "Servicio web\n<<contenedor Docker>>" as GW {
+    artifact "andina-gateway\n(FastAPI + Uvicorn)" as AG
+  }
+  node "Red privada" {
+    node "Servicio privado\n<<contenedor Docker>>" as SF {
+      artifact "andina-facturacion" as AF
+      database "SQLite / PostgreSQL\nfacturas" as DBF
+    }
+    node "Servicio privado\n<<contenedor Docker>>\n(escalable N réplicas)" as SI {
+      artifact "andina-inventario" as AI
+      database "SQLite / PostgreSQL\ninventario" as DBI
+    }
+    node "Key Value administrado" as KV {
+      artifact "Redis 7\n(Streams)" as R
+    }
+  }
+}
+node "Repositorio GitHub" as GH
+C --> AG : HTTPS :443 · X-API-Key
+AG --> AF : HTTP interno :8000
+AG --> AI : HTTP interno :8000
+AF --> R : XADD
+AI --> R : XREADGROUP / XACK
+AF --> DBF
+AI --> DBI
+GH ..> GW : despliegue continuo\n(render.yaml)
+@enduml
